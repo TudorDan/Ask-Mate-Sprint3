@@ -223,5 +223,11 @@ def route_add_user():
     return render_template('add_new_user.html', user_ok=user_ok)
 
 
+@app.route('/list-users')
+def route_users_list():
+    users_dict_list = data_manager.obtain_all_users_data()
+    return render_template('list_users.html', users_dict_list=users_dict_list)
+
+
 if __name__ == '__main__':
     app.run(debug=True)

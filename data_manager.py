@@ -448,3 +448,12 @@ def check_user(cursor, username):
     if user_dict is None:
         return True
     return False
+
+
+@database_common.connection_handler
+def obtain_all_users_data(cursor):
+    cursor.execute("""
+                    SELECT * FROM users;
+                    """)
+    users_dict_list = cursor.fetchall()
+    return users_dict_list
