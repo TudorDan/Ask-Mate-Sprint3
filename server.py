@@ -223,6 +223,22 @@ def route_add_user():
     return render_template('add_new_user.html', user_ok=user_ok)
 
 
+@app.route('/user-login', methods=['GET', 'POST'])
+def route_login():
+    user_ok = True
+    if request.method == 'POST':
+        username = request.form['form_username']
+        password = request.form['form_password']
+
+        user_ok = data_manager.verify_user(username, password)
+
+        if user_ok:
+            return redirect(url_for('route_list'))
+        else:
+            user_ok = False
+    return render_template('login.html', user_ok=user_ok)
+
+
 @app.route('/list-users')
 def route_users_list():
     users_dict_list = data_manager.obtain_all_users_data()

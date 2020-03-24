@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>User Log in</h1>
+
+    {% if user_ok == False %}
+        <p class="user_error">Username and password are incorrect!</p>
+    {% endif %}
+
+    <form action="/user-login" method="post">
+        <label for="username">Username:</label>&nbsp;&nbsp;
+        <input id="username" type="text" name="form_username" placeholder="username" required><br><br>
+
+        <label for="password">Password:</label>&nbsp;&nbsp;
+        <input id="password" type="text" name="form_password" placeholder="password" required><br><br>
+
+        <button type="submit">Log in</button>
+    </form>
+{% endblock %}

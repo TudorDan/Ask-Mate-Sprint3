@@ -457,3 +457,23 @@ def obtain_all_users_data(cursor):
                     """)
     users_dict_list = cursor.fetchall()
     return users_dict_list
+
+
+def verify_password(plain_text_password, hashed_password):
+    hashed_bytes_password = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(plain_text_password.encode('utf-8'), hashed_bytes_password)
+
+
+@database_common.connection_handler
+def verify_user(cursor, username, password):
+    cursor.execute("""
+                    SELECT password FROM users
+                    WHERE user_name = %(username)s;
+                    """,
+                   {'username': username})
+    user_dict = cursor.fetchone()
+    if user_dict is None:
+        return False
+    else:
+        result = verify_password(password, user_dict['password'])
+    return result
