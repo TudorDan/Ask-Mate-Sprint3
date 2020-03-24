@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Add tag to question</h1>
+
+    <form action="/question/{{ question_id }}/new-tag" method="post">
+        <label for="message">Tag message:</label>
+        <input id="message" type="text" name="add_tag"><br>
+
+        <button type="submit">Add tag</button>
+    </form>
+{% endblock %}

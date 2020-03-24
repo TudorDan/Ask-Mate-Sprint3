@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Edit Answer</h1>
+
+    {% include 'footer.html' %}
+
+    <form action="/answer/{{ answer_id }}/edit" method="post" enctype="multipart/form-data">
+        <label for="message">Answer Message:</label><br>
+        <input id="message" type="text" name="edit_message" value="{{ answer_data['message'] }}">
+
+        <label for="image">Select image</label><br>
+        <img src="/static/images/{{ answer_data['image'] }}"><br>
+        <input id="image" type="file" name="edit_answer_image"><br><br>
+
+        <button type="submit">Edit answer</button>
+    </form>
+{% endblock %}

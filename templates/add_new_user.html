@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Register new user:</h1>
+
+    <form action="/registration" method="post">
+        <label for="username">Username:</label>&nbsp;&nbsp;
+        <input id="username" type="text" name="form_username" required placeholder="write an username"><br>
+        {% if user_ok == False %}
+            <span id="user_error">Username already exists! Choose another one!</span>
+        {% endif %}
+        <br><br>
+
+        <label for="password">Password:</label>&nbsp;&nbsp;
+        <input id="password" type="password" name="form_password" required placeholder="write a password"><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}

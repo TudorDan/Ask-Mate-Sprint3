@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>All Questions</h1>
+
+    {% include 'footer.html' %}
+    <br>
+
+    <p>
+        <a href="/add_question" id="add_a_question">Add Question</a>
+    </p>
+    <br>
+
+    <form action="/list" method="get">
+        <label for="sort">Sort Questions:</label>
+        <select id="sort" name="order_by">
+            {% for elem in ['title', 'submission_time', 'message', 'view_number', 'vote_number'] %}
+            <option value="{{ elem }}" {{ 'selected' if elem == order_by }}>{{ elem }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="direction">Direction:</label>
+        <select id="direction" name="order_direction">
+            {% for elem in ['asc', 'desc'] %}
+            <option value="{{ elem }}" {{ 'selected' if elem == order_direction }}>{{ elem }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <input type="submit" value="list">
+    </form>
+
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Submission Time</th>
+                <th>View Number</th>
+                <th>Vote Number</th>
+                <th>Title</th>
+                <th>Message</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dictionary in all_questions %}
+            <tr>
+            {% for key in dictionary %}
+                {% if key == 'title' %}
+                <td id="all_question_likes">
+                    <button type="submit"><a href="/question/{{ dictionary['id'] }}/vote_up"
+                                                 class="linkButtons">Vote Up</a></button>
+                    <a href="/question/{{ dictionary['id'] }}">{{ dictionary[key] }}</a>
+                    <button type="submit"><a href="/question/{{ dictionary['id'] }}/vote_down"
+                                                 class="linkButtons">Vote Down</a></button>
+                </td>
+                {% elif key == 'image' %}
+                <td>
+                    <img src="/static/images/{{ dictionary['image'] }}">
+                </td>
+                {% else %}
+                <td>{{ dictionary[key] }}</td>
+                {% endif %}
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

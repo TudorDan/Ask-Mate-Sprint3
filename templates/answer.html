@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Add an answer to: {{ specific_question['title'] }}</h1>
+
+    {% include 'footer.html' %}
+
+    <form action="/question/{{ question_id }}/new-answer" method="post" enctype="multipart/form-data">
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="form_answer"></textarea><br>
+
+        <label for="image">Select image</label>
+        <input id="image" type="file" name="form_answer_image"><br><br>
+
+        <button type="submit">Post</button>
+    </form>
+{% endblock %}

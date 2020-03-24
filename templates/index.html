@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Ask Mate Application</h1>
+
+    <a href="/list">See all questions</a>&nbsp;&nbsp;
+    <a href="/registration">Register new user</a><br>
+
+    <form action="/search" method="get">
+        <label for="question">Search for question:&nbsp;&nbsp;</label>
+        <input type="text" id="question" name="q" required>&nbsp;&nbsp;
+        <input type="submit" value="search">
+    </form>
+
+    {% if query %}
+        <h2>Search Results for <mark>{{ pattern }}</mark>:</h2>
+        {% if search_results %}
+            {% for result in search_results%}
+            <p>{{ result | safe }}</p>
+            {% endfor %}
+        {% else %}
+            <p>Database has no questions containing <span id="query_quest">{{ pattern }}</span>!</p>
+        {% endif %}
+    {% else %}
+        <h2>Latest Questions</h2>
+        {% for question in questions %}
+            <p>{{ question['title'] }}</p>
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}

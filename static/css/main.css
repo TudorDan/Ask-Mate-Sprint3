@@ -1,0 +1,72 @@
+body {
+    background-color: #008e9d;
+    color: white;
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+    text-align: center;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+.content-wrapper {
+}
+
+body div.content-wrapper a {
+    display: inline-block;
+    padding: 5px;
+    color: mediumblue;
+}
+
+h1 {
+    color: gold;
+}
+
+h2, h3 {
+    color: chartreuse;
+}
+
+#query_quest {
+    color: indigo;
+    text-decoration: underline;
+}
+
+footer {
+    font-family: "Abyssinica SIL", sans-serif;
+}
+
+table {
+    width: 100%;
+}
+
+table thead th, table tbody td {
+    border: 2px solid blue;
+    padding: 10px;
+}
+
+#question_title {
+    color: beige;
+    font-family: "Abyssinica SIL", sans-serif;
+}
+
+#add_a_question {
+    color: darkmagenta;
+}
+
+img {
+    max-width: 150px;
+}
+
+.linkButtons {
+    text-decoration: none;
+    font-weight: bolder;
+    font-size: 1.2em;
+    color: red !important;
+}
+
+.comment {
+    color: black;
+}
+
+#user_error {
+    color: red;
+    font-weight: bold;
+}

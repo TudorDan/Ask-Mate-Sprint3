@@ -1,0 +1,141 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1 id="question_title">Question and its Answers</h1>
+
+    {% include 'footer.html' %}
+
+    <p>
+        <a href="/question/{{ question_dictionary['id'] }}/edit" id="edit_a_question">Edit question</a>
+        <button type="submit"><a href="/question/{{ question_dictionary['id'] }}/delete" class="linkButtons">Delete
+            question</a></button>&nbsp;
+        <a href="/question/{{ question_dictionary['id'] }}/new-answer">Add answer to question</a>
+        <a href="/question/{{ question_dictionary['id'] }}/new-comment" class="comment">Add comment to question</a>
+        <a href="/question/{{ question_dictionary['id'] }}/new-tag">Add tags to question</a>
+    </p>
+
+    <h2>Question Title</h2>
+    <p>{{ question_dictionary['title'] }}</p>
+
+    <h3>Question Message</h3>
+    <p>{{ question_dictionary['message'] }}</p>
+
+    <h3>Question Image</h3>
+    <img src="../static/images/{{ question_dictionary['image'] }}" alt="random img">
+
+    <h3>Question Tags:</h3>
+    {% for tag in tags_list %}
+    <span>
+        {{ tag['name'] }}
+        <button type="submit">
+            <a href="/question/{{ question_dictionary['id'] }}/tag/{{ tag['id'] }}/delete" class="linkButtons">
+                <i class="fas fa-times"></i>
+            </a>
+        </button>
+    </span>&nbsp;
+    {% endfor %}
+
+    <h3>Question Views:</h3>
+    <p>{{ question_dictionary['view_number'] }}</p>
+
+    <h3>Question Answers:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Submission Time</th>
+                <th>Vote Number</th>
+                <th>Message</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for answer_dict in question_answers_list %}
+            <tr>
+                <td>{{ answer_dict['id'] }}</td>
+                <td>{{ answer_dict['submission_time'] }}</td>
+                <td>{{ answer_dict['vote_number'] }}</td>
+                <td id="answer_likes">
+                    <button type="submit"><a href="/answer/{{ answer_dict['id'] }}/vote_up"
+                                             class="linkButtons">Like</a></button>
+
+                    {{ answer_dict['message'] }}
+
+                    <button type="submit"><a href="/answer/{{ answer_dict['id'] }}/vote_down"
+                                             class="linkButtons">Dislike</a></button>
+                    <h4>Comments to answer:</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Message</th>
+                                <th>Submission Time</th>
+                                <th>Edited</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for comm in answer_comments_list %}
+                            {% if answer_dict['id'] == comm['answer_id'] %}
+                            <tr>
+                                <td>
+                                    {{ comm['message'] }}
+                                    <a href="/comment/{{ comm['id'] }}/edit">Edit answer comments</a>
+                                    <button type="submit">
+                                        <a href="/comments/{{ comm['id'] }}/delete" class="linkButtons"
+                                           onclick="return confirm('Are you sure you wish to delete this comment?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </button>
+                                </td>
+                                <td>{{ comm['submission_time'] }}</td>
+                                <td>{{ comm['edited_count'] }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+                <td><img src="/static/images/{{ answer_dict['image'] }}" alt="random img"></td>
+                <td>
+                    <button type="submit"><a href="/answer/{{ answer_dict['id'] }}/delete"
+                                             class="linkButtons">Delete Answer</a></button>
+                    <a href="/answer/{{ answer_dict['id'] }}/edit">Edit Answer</a>
+                    <a href="/answer/{{ answer_dict['id'] }}/new-comment" class="comment">Add comment</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Question Comments:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Message</th>
+                <th>Submission Time</th>
+                <th>Edited</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comment_dictionary in question_comments_list %}
+            <tr>
+                <td>{{ comment_dictionary['id'] }}</td>
+                <td>{{ comment_dictionary['message'] }}</td>
+                <td>{{ comment_dictionary['submission_time'] }}</td>
+                <td>{{ comment_dictionary['edited_count'] }}</td>
+                <td>
+                    <a href="/comment/{{ comment_dictionary['id'] }}/edit">Edit question comment</a>
+                    <button type="submit">
+                        <a href="/comments/{{ comment_dictionary['id'] }}/delete" class="linkButtons"
+                           onclick="return confirm('Are you sure you wish to delete this comment?')">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

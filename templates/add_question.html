@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Add a Question</h1>
+    <form action="/add_question" method="post" enctype="multipart/form-data">
+        <label for="title">Question Title:</label><br>
+        <input id="title" type="text" name="form_question_title"><br><br>
+
+        <label for="message">Question Message:</label><br>
+        <textarea id="message" name="form_question_message"></textarea><br><br>
+
+        <label for="image">Select image</label>
+        <input id="image" type="file" name="form_question_image"><br><br>
+
+        <button type="submit">Add new question</button>
+    </form>
+{% endblock %}

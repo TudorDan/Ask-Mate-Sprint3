@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Edit comment</h1>
+
+    {% include 'footer.html' %}
+
+    <form action="/comment/{{ comment_dict['id'] }}/edit" method="post">
+    <label for="message">Comment message:</label>
+    <input id="message" type="text" name="edit_comment" value="{{ comment_dict['message'] }}">
+
+    <button type="submit">Edit comment</button>
+    </form>
+{% endblock %}

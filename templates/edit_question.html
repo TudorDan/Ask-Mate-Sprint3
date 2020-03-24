@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Edit Question</h1>
+
+    {% include 'footer.html' %}
+
+    <form action="/question/{{ question_id }}/edit" method="post" enctype="multipart/form-data">
+        <label for="title">Question Title:</label><br>
+        <input id="title" type="text" name="edit_title" value="{{ specific_question['title'] }}"><br><br>
+
+        <label for="message">Question Message:</label><br>
+        <textarea id="message" name="edit_message">{{ specific_question['message'] }}</textarea><br><br>
+
+
+
+        <label for="image">Select image</label><br>
+        <img id="image" src="/static/images/{{ specific_question['image'] }}"><br>
+        <input id="image" type="file" name="edit_question_image"><br><br>
+
+        <button type="submit">Edit question</button>
+    </form>
+{% endblock %}

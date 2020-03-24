@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>Add comment to question</h1>
+
+    {% include 'footer.html' %}
+
+    <form action="/question/{{ question_id }}/new-comment" method="post">
+        <label for="message">Comment message:</label>
+        <input id="message" type="text" name="add_message"><br>
+
+        <button type="submit">Add comment</button>
+    </form>
+{% endblock %}
