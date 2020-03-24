@@ -429,7 +429,7 @@ def hash_password(plain_text_password):
 def add_new_user(cursor, username, hashed_password):
     dt = datetime.datetime.now().strftime('%Y-%b-%d %H:%M:%S')
     cursor.execute("""
-                    INSERT INTO users (username, password, submission_time)
+                    INSERT INTO users (user_name, password, submission_time)
                     VALUES (%(username)s, %(hashed_password)s, %(dt)s);
                     """,
                    {'username': username,
@@ -440,8 +440,8 @@ def add_new_user(cursor, username, hashed_password):
 @database_common.connection_handler
 def check_user(cursor, username):
     cursor.execute("""
-                    SELECT username FROM users
-                    WHERE username = %(username)s;
+                    SELECT user_name FROM users
+                    WHERE user_name = %(username)s;
                     """,
                    {'username': username})
     user_dict = cursor.fetchone()
