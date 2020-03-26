@@ -1,3 +1,5 @@
+from flask import session
+
 import database_common
 import re
 import datetime
@@ -18,7 +20,8 @@ def display_latest_five_questions(cursor):
 @database_common.connection_handler
 def get_all_questions_data(cursor):
     cursor.execute("""
-                    SELECT * FROM question;
+                    SELECT * FROM question
+                    ORDER BY submission_time;
                     """)
     all_questions = cursor.fetchall()
     return all_questions
@@ -77,7 +80,8 @@ def get_specific_question_data(cursor, question_id):
 def get_all_answers_for_specif_question(cursor, question_id):
     cursor.execute("""
                     SELECT * FROM answer
-                    WHERE question_id = %(question_id)s;
+                    WHERE question_id = %(question_id)s
+                    ORDER BY submission_time;
                     """,
                    {'question_id': question_id})
     answers_list = cursor.fetchall()
@@ -205,6 +209,20 @@ def question_vote_up(cursor, question_id):
                     WHERE id = %(question_id)s;
                     """,
                    {'question_id': question_id})
+    # do not allow user to vote herself/himself
+    cursor.execute("""
+                    SELECT user_id FROM question
+                    WHERE id = %(question_id)s;
+                    """,
+                   {'question_id': question_id})
+    question_dict = cursor.fetchone()
+    if question_dict['user_id'] != session['user_id']:
+        cursor.execute("""
+                        UPDATE users
+                        SET reputation = reputation + 5
+                        WHERE id = %(question_dict)s;
+                        """,
+                       {'question_dict': question_dict['user_id']})
 
 
 @database_common.connection_handler
@@ -215,6 +233,20 @@ def question_vote_down(cursor, question_id):
                     WHERE id = %(question_id)s;
                     """,
                    {'question_id': question_id})
+    # do not allow user to down vote herself/himself
+    cursor.execute("""
+                    SELECT user_id FROM question
+                    WHERE id = %(question_id)s;
+                    """,
+                   {'question_id': question_id})
+    question_dict = cursor.fetchone()
+    if question_dict['user_id'] != session['user_id']:
+        cursor.execute("""
+                        UPDATE users
+                        SET reputation = reputation - 2
+                        WHERE id = %(question_dict)s;
+                        """,
+                       {'question_dict': question_dict['user_id']})
 
 
 @database_common.connection_handler
@@ -225,6 +257,20 @@ def answer_vote_up(cursor, answer_id):
                     WHERE id = %(answer_id)s;
                     """,
                    {'answer_id': answer_id})
+    # do not allow user to vote herself/himself
+    cursor.execute("""
+                    SELECT user_id FROM answer
+                    WHERE id = %(answer_id)s;
+                    """,
+                   {'answer_id': answer_id})
+    question_dict = cursor.fetchone()
+    if question_dict['user_id'] != session['user_id']:
+        cursor.execute("""
+                        UPDATE users
+                        SET reputation = reputation + 10
+                        WHERE id = %(question_dict)s;
+                        """,
+                       {'question_dict': question_dict['user_id']})
 
 
 @database_common.connection_handler
@@ -235,6 +281,20 @@ def answer_vote_down(cursor, answer_id):
                     WHERE id = %(answer_id)s;
                     """,
                    {'answer_id': answer_id})
+    # do not allow user to down vote herself/himself
+    cursor.execute("""
+                    SELECT user_id FROM answer
+                    WHERE id = %(answer_id)s;
+                    """,
+                   {'answer_id': answer_id})
+    question_dict = cursor.fetchone()
+    if question_dict['user_id'] != session['user_id']:
+        cursor.execute("""
+                        UPDATE users
+                        SET reputation = reputation - 2
+                        WHERE id = %(question_dict)s;
+                        """,
+                       {'question_dict': question_dict['user_id']})
 
 
 @database_common.connection_handler
@@ -278,7 +338,8 @@ def add_comment(cursor, question_id, message):
 def get_all_comments_for_specif_question(cursor, question_id):
     cursor.execute("""
                     SELECT * FROM comment
-                    WHERE question_id = %(question_id)s;
+                    WHERE question_id = %(question_id)s
+                    ORDER BY submission_time;
                     """,
                    {'question_id': question_id})
     comments_list = cursor.fetchall()
@@ -453,7 +514,8 @@ def check_user(cursor, username):
 @database_common.connection_handler
 def obtain_all_users_data(cursor):
     cursor.execute("""
-                    SELECT * FROM users;
+                    SELECT * FROM users
+                    ORDER BY submission_time;
                     """)
     users_dict_list = cursor.fetchall()
     return users_dict_list
@@ -477,3 +539,102 @@ def verify_user(cursor, username, password):
     else:
         result = verify_password(password, user_dict['password'])
     return result
+
+
+@database_common.connection_handler
+def get_user_id_by_username(cursor, username):
+    cursor.execute("""
+                    SELECT id FROM users
+                    WHERE user_name = %(username)s;
+                    """,
+                   {'username': username})
+    user_dict = cursor.fetchone()
+    return user_dict['id']
+
+
+@database_common.connection_handler
+def get_questions_by_user_id(cursor, user_id):
+    cursor.execute("""
+                    SELECT id, title, message, image FROM question
+                    WHERE user_id = %(user_id)s;
+                    """,
+                   {'user_id': user_id})
+    questions_dict_list = cursor.fetchall()
+    return questions_dict_list
+
+
+@database_common.connection_handler
+def get_answers_by_user_id(cursor, user_id):
+    cursor.execute("""
+                    SELECT answer.message, answer.image, answer.question_id, answer.accepted, answer.id, question.title
+                    FROM answer 
+                    JOIN question ON answer.question_id = question.id
+                    WHERE answer.user_id = %(user_id)s;
+                    """,
+                   {'user_id': user_id})
+    answers_dict_list = cursor.fetchall()
+    return answers_dict_list
+
+
+@database_common.connection_handler
+def get_comments_by_user_id(cursor, user_id):
+    cursor.execute("""
+                    SELECT answer.message AS ans_mes, question.id, question.title, comment.message
+                    FROM answer 
+                    JOIN question ON answer.question_id = question.id
+                    JOIN comment ON answer.id = comment.answer_id
+                    WHERE comment.user_id = %(user_id)s
+                    UNION
+                    SELECT null, question.id, question.title, comment.message
+                    FROM question 
+                    JOIN comment ON question.id = comment.question_id
+                    WHERE comment.user_id = %(user_id)s;
+                    """,
+                   {'user_id': user_id})
+    comments_dict_list = cursor.fetchall()
+    return comments_dict_list
+
+
+@database_common.connection_handler
+def mark_answer_as_accepted(cursor, answer_id):
+    cursor.execute("""
+                    UPDATE answer 
+                    SET accepted = TRUE 
+                    WHERE id = %(answer_id)s;
+                    """,
+                   {'answer_id': answer_id})
+    # do not allow user to mark herself/himself
+    cursor.execute("""
+                    SELECT user_id FROM answer
+                    WHERE id = %(answer_id)s;
+                    """,
+                   {'answer_id': answer_id})
+    question_dict = cursor.fetchone()
+    if question_dict['user_id'] != session['user_id']:
+        cursor.execute("""
+                        UPDATE users
+                        SET reputation = reputation + 15
+                        WHERE id = %(question_dict)s;
+                        """,
+                       {'question_dict': question_dict['user_id']})
+
+
+@database_common.connection_handler
+def unmark_accepted_answer(cursor, answer_id):
+    cursor.execute("""
+                    UPDATE answer 
+                    SET accepted = FALSE 
+                    WHERE id = %(answer_id)s;
+                    """,
+                   {'answer_id': answer_id})
+
+
+@database_common.connection_handler
+def get_all_user_data_by_username(cursor, username):
+    cursor.execute("""
+                        SELECT * FROM users
+                        WHERE user_name = %(username)s;
+                        """,
+                   {'username': username})
+    user_dict = cursor.fetchone()
+    return user_dict

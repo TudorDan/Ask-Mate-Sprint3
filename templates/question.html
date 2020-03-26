@@ -64,6 +64,25 @@
 
                     <button type="submit"><a href="/answer/{{ answer_dict['id'] }}/vote_down"
                                              class="linkButtons">Dislike</a></button>
+                    <br><br>
+
+                    {% if answer_dict['accepted'] %}
+                        <i class="fas fa-check-square"></i><br>
+                            <button>
+                            <a href="/unmark/{{ answer_dict['id'] }}/{{ question_dictionary['id'] }}"
+                               class="linkButtons">
+                                Unmark
+                            </a>
+                        </button>
+                            {% else %}
+                        <button>
+                            <a href="/mark-accepted/{{ answer_dict['id'] }}/{{ question_dictionary['id'] }}"
+                               class="linkButtons">
+                                Mark as accepted
+                            </a>
+                        </button>
+                    {% endif %}
+
                     <h4>Comments to answer:</h4>
                     <table>
                         <thead>

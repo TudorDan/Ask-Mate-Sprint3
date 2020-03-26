@@ -4,8 +4,14 @@
     <h1>Ask Mate Application</h1>
 
     <a href="/list">See all questions</a>&nbsp;&nbsp;
-    <a href="/registration">Register new user</a><br>
-    <a href="/user-login">Login</a><br>
+    {% if session['logged_in'] == False %}
+        <a href="/registration">Register new user</a><br>
+        <a href="/user-login">Login</a><br>
+    {% else %}
+        <span>Logged in as: {{ session['username'] }}</span>
+        <a href="/user/{{ session['user_id'] }}">User Activity</a><br>
+        <a href="/user-logout">Logout</a><br>
+    {% endif %}
     <a href="/list-users">Users list</a>
 
     <form action="/search" method="get">

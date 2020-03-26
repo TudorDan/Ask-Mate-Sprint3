@@ -70,3 +70,8 @@ img {
     color: red;
     font-weight: bold;
 }
+
+.fas.fa-check-square {
+    color: yellow;
+    font-size: 1.4em;
+}

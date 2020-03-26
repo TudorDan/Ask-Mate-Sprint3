@@ -1,7 +1,22 @@
+from functools import wraps
+
 import data_manager
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 
 app = Flask(__name__)
+app.secret_key = 'Vasile'
+
+
+# check if user is logged in
+def is_logged_in(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if session['logged_in']:
+            return f(*args, **kwargs)
+        else:
+            return redirect(url_for('route_login'))
+
+    return wrap
 
 
 @app.route('/')
@@ -18,6 +33,7 @@ def index():
 
 
 @app.route('/list')
+@is_logged_in
 def route_list():
     all_questions = data_manager.get_all_questions_data()
     if request.args:
@@ -230,19 +246,57 @@ def route_login():
         username = request.form['form_username']
         password = request.form['form_password']
 
-        user_ok = data_manager.verify_user(username, password)
-
-        if user_ok:
-            return redirect(url_for('route_list'))
-        else:
+        user_dict = data_manager.get_all_user_data_by_username(username)
+        if user_dict is None or data_manager.verify_password(password, user_dict['password']) is False:
             user_ok = False
+        else:
+            session['user_id'] = user_dict['id']
+            session['username'] = user_dict['user_name']
+            session['logged_in'] = True
+            session['reputation'] = user_dict['reputation']
+            return redirect(url_for('route_list'))
     return render_template('login.html', user_ok=user_ok)
+
+
+@app.route('/user-logout')
+def logout():
+    session.clear()
+    session['logged_in'] = False
+    return redirect(url_for('index'))
 
 
 @app.route('/list-users')
 def route_users_list():
     users_dict_list = data_manager.obtain_all_users_data()
     return render_template('list_users.html', users_dict_list=users_dict_list)
+
+
+@app.route('/user/<user_id>')
+@is_logged_in
+def route_user_activity(user_id):
+    id_check = False
+    questions_dict_list = []
+    answers_dict_list = []
+    comments_dict_list = []
+    if int(user_id) == session['user_id']:
+        id_check = True
+        questions_dict_list = data_manager.get_questions_by_user_id(user_id)
+        answers_dict_list = data_manager.get_answers_by_user_id(user_id)
+        comments_dict_list = data_manager.get_comments_by_user_id(user_id)
+    return render_template('user_page.html', id_check=id_check, questions_dict_list=questions_dict_list,
+                           answers_dict_list=answers_dict_list, comments_dict_list=comments_dict_list)
+
+
+@app.route('/mark-accepted/<answer_id>/<question_id>')
+def route_mark_accepted(answer_id, question_id):
+    data_manager.mark_answer_as_accepted(answer_id)
+    return redirect(url_for('route_question', question_id=question_id))
+
+
+@app.route('/unmark/<answer_id>/<question_id>')
+def route_unmark_answer(answer_id, question_id):
+    data_manager.unmark_accepted_answer(answer_id)
+    return redirect(url_for('route_question', question_id=question_id))
 
 
 if __name__ == '__main__':
