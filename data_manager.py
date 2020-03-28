@@ -638,3 +638,15 @@ def get_all_user_data_by_username(cursor, username):
                    {'username': username})
     user_dict = cursor.fetchone()
     return user_dict
+
+
+@database_common.connection_handler
+def get_all_existing_tags(cursor):
+    cursor.execute("""
+                    SELECT name, COUNT(question_id) AS question_number
+                    FROM tag 
+                    JOIN question_tag ON tag.id = question_tag.tag_id
+                    GROUP BY name;
+                    """)
+    tags_list_of_dicts = cursor.fetchall()
+    return tags_list_of_dicts

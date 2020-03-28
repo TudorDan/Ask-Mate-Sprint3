@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <h1>All Existing Tags</h1>
+
+    {% include 'footer.html' %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Existing Tag</th>
+                <th>Number of questions marked with given tag</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dictionary in tags_list %}
+            <tr>
+                <td>{{ dictionary['name'] }}</td>
+                <td>{{ dictionary['question_number'] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

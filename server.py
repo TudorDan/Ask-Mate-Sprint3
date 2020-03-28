@@ -299,5 +299,11 @@ def route_unmark_answer(answer_id, question_id):
     return redirect(url_for('route_question', question_id=question_id))
 
 
+@app.route('/tags')
+def route_tags():
+    tags_list = data_manager.get_all_existing_tags()
+    return render_template('tag_page.html', tags_list=tags_list)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
